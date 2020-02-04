@@ -730,8 +730,7 @@ function staffDummyText() {
 
 var setupAutoPlayControls = function(){
 
-	var panelsPlayButton = document.getElementById("start_auto_play_panels");
-	var panelsStopButton = document.getElementById("stop_auto_play_panels");
+	var autoPlayCheckbox = document.getElementById("autoplay_toggle");
 
 	var statsButton = document.querySelector("[for='stats']");
 	var itemsButton = document.querySelector("[for='items']");
@@ -757,26 +756,27 @@ var setupAutoPlayControls = function(){
 	function setAutoPanelsInterval(){
 		// 30 seconds? (should be easy to change) per panel
 		// use timer to sync across instances???
-		autoPanelsInterval = setInterval(autoPlayPanels, 30 * 1000);
+		autoPanelsInterval = setInterval(autoPlayPanels, 3 * 1000);
 	}
 
 	function clearAutoPanelsInterval() {
 		clearInterval(autoPanelsInterval);
 	}
 
-	panelsPlayButton.addEventListener("click", function (){
-		setAutoPanelsInterval();
-		autoPlayPanels();
-		this.style.display = "none";
-		panelsStopButton.style.display = "flex";
-	});
-
-	panelsStopButton.addEventListener("click", function(){
-		clearAutoPanelsInterval();
-		removePlayingClass();
-		this.style.display = "none";
-		panelsPlayButton.style.display = "flex";
-	});
+	autoPlayCheckbox.addEventListener( 'change', function() {
+		Tracker.getLayoutData(function(data) {
+			if (data["autoplay_toggle"] == true) {
+				clearAutoPanelsInterval();
+				setAutoPanelsInterval();
+				autoPlayPanels();
+			} 
+			else if(data["autoplay_toggle"] == false){
+				clearAutoPanelsInterval();
+				removePlayingClass();
+			}
+			else{alert('wtf')}
+		});
+	 });
 
 	function removePlayingClass(){
 		statsButton.classList.remove("panel-playing");
@@ -784,16 +784,12 @@ var setupAutoPlayControls = function(){
 	}
 
 	statsButton.addEventListener("click", function(){
-		clearInterval(autoPanelsInterval);
+		clearAutoPanelsInterval()
 		removePlayingClass();
-		panelsStopButton.style.display = "none";
-		panelsPlayButton.style.display = "flex";
 	});
 
 	itemsButton.addEventListener("click", function(){
-		clearInterval(autoPanelsInterval);
+		clearAutoPanelsInterval()
 		removePlayingClass();
-		panelsStopButton.style.display = "none";
-		panelsPlayButton.style.display = "flex";
 	});
 }
